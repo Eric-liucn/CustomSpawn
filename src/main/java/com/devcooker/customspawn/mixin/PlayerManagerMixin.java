@@ -16,7 +16,7 @@ public class PlayerManagerMixin {
     at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;setWorld(Lnet/minecraft/server/world/ServerWorld;)V", shift = At.Shift.AFTER))
     public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info){
         ServerWorld currentWorld = player.getWorld();
-
+        System.out.println(currentWorld.getRegistryKey().getValue().getNamespace());
     }
 
 }

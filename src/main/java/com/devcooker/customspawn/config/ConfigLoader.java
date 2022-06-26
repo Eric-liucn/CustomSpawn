@@ -1,11 +1,10 @@
 package com.devcooker.customspawn.config;
 
-import com.google.common.reflect.TypeToken;
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import io.leangen.geantyref.TypeToken;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurationOptions;
+import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
+import org.spongepowered.configurate.loader.ConfigurationLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,31 +17,31 @@ public class ConfigLoader {
     private CommentedConfigurationNode node;
     private Config config;
 
-    public ConfigLoader(final Path configDir) throws IOException, ObjectMappingException {
+    public ConfigLoader(final Path configDir) throws IOException{
         instance = this;
         if (!Files.exists(configDir)){
             Files.createDirectories(configDir);
         }
         Path configFile = configDir.resolve("setting.conf");
         loader = HoconConfigurationLoader.builder()
-                .setPath(configFile)
-                .setDefaultOptions(
+                .path(configFile)
+                .defaultOptions(
                         ConfigurationOptions.defaults()
-                                .withSerializers(collection -> collection.register(TypeToken.of(Rule.class), new Rule.RuleSerializer()))
-                                .withShouldCopyDefaults(true)
+                                .serializers(collection -> {})
+                                .shouldCopyDefaults(true)
                 )
                 .build();
         load();
         save();
     }
 
-    public void load() throws IOException, ObjectMappingException {
+    public void load() throws IOException{
         node = loader.load();
-        config = node.getValue(TypeToken.of(Config.class), new Config());
+        config = node.get(TypeToken.get(Config.class), new Config());
     }
 
-    public void save() throws ObjectMappingException, IOException {
-        node.setValue(TypeToken.of(Config.class), this.config);
+    public void save() throws IOException {
+        node.set(TypeToken.get(Config.class), this.config);
         loader.save(node);
     }
 
